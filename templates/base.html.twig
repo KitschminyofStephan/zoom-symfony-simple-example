@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        
+        <link href="{{ '/main.css' }}" rel="stylesheet" type="text/css">
+        {% block stylesheets %}{% endblock %}
+
+        <!-- For Web Client View: import Web Meeting SDK CSS -->
+        <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.3.5/css/bootstrap.css" />
+        <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.3.5/css/react-select.css" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+
+        <!-- For either view: import Web Meeting SDK JS dependencies -->
+        <script src="https://source.zoom.us/2.3.5/lib/vendor/react.min.js"></script>
+        <script src="https://source.zoom.us/2.3.5/lib/vendor/react-dom.min.js"></script>
+        <script src="https://source.zoom.us/2.3.5/lib/vendor/redux.min.js"></script>
+        <script src="https://source.zoom.us/2.3.5/lib/vendor/redux-thunk.min.js"></script>
+        <script src="https://source.zoom.us/2.3.5/lib/vendor/lodash.min.js"></script>
+
+        <!-- For Component View -->
+        <script src="https://source.zoom.us/2.3.5/zoom-meeting-embedded-2.3.5.min.js"></script>
+
+        <!-- For Client View -->
+        <script src="https://source.zoom.us/zoom-meeting-2.3.5.min.js"></script>
+    </body>
+</html>
