@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Zoom Client view example{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Zoom Client view ✅</h1>
+</div>
+
+<!-- added to the end of body -->
+<div id="zmmtg-root"><div>
+<div id="aria-notify-area"></div>
+
+<script>
+    ZoomMtg.preLoadWasm();
+    ZoomMtg.prepareWebSDK();
+
+    // load language file, also passes any error messages to the ui
+    ZoomMtg.i18n.load('en-US');
+    ZoomMtg.i18n.reload('en-US');
+
+    // Set Web Meeting SDK lib (for Global)
+    ZoomMtg.setZoomJSLib('https://sorce.zoom.us/2.3.5/lib', '/av');
+</script>
+
+{% endblock %}
