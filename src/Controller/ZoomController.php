@@ -20,24 +20,27 @@ class ZoomController extends AbstractController
     }
 
     /**
-     * @Route("/clientSDK", name="Zoom client SDK example)
+     * @Route("/clientSDK", name="ZoomClientSDKExample")
      */
     public function zoomClientSDK(): Response
     {
         return $this->render('zoom/zoom-client-view.html.twig', [
+            'ZOOM_VERSION' => $this->getParameter('app.zoom_version'),
             'ZOOM_API_KEY' => $this->getParameter('app.zoom_api_key'),
         ]);
     }
 
     /**
-     * @Route("/generateSignature", name="generateSignature", methods="{POST}")
+     * @Route("/generateSignature", name="generateSignature", methods={"POST"})
      */
     public function generateSignature(Request $request): Response
     {
-        $data = json_decode($request->getContent(), true);
-
-        $room = new Room($data["meetingNumber"]);
-        $signature = $room->generateSignature($data["apiKey"], $data["apiSecret"], $data["meetingNumber"], $data["role"]);
+        dump("here");
+        $data = json_decode($request->getContent(), false);
+        dump($data);
+        dump($request);
+        $room = new Room($data->meetingNumber);
+        $signature = $room->generateSignature($this->getParameter('app.zoom_api_key'), $this->getParameter('app.zoom_api_secret'), $data->meetingNumber, $data->role);
 
         return new Response(json_encode($signature), 200);
     }
