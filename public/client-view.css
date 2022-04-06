@@ -1,3 +1,26 @@
-#zmmtg-root { /* Necessary to hide the black screen ! */
+.content {
+    width: 75%;
+    margin: auto;
+    text-align: center;
+}
+
+#joinMeetingButton {
+    margin-top: 20px;
+    background-color: #2D8CFF;
+    color: #ffffff;
+    text-decoration: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    display: inline-block;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+/* !!! Necessary to hide the black screen !!! */
+#zmmtg-root { 
     display: none;
 }

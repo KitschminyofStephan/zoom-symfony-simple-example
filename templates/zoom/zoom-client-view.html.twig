@@ -11,15 +11,15 @@
 {% endblock %}
 
 {% block body %}
-    <div class="example-wrapper">
-        <h1>Zoom Client view ✅</h1>
+    <div class="content">
+        <div class="example-wrapper">
+            <h1>Zoom Client view ✅</h1>
+        </div>
+
+  
+
+        <button id="joinMeetingButton" onClick="getSignature()">Join Meeting</button>
     </div>
-
-    <div id="meetingSDKElement">
-
-    </div>
-
-    <button onClick="getSignature()">Join Meeting</button>
 {% endblock %}
 
 {% block body_script %}
@@ -84,7 +84,7 @@
                     console.log(success)
 
                     ZoomMtg.join({
-                        signature: signature(), // role in signature needs to be 1 to start and need to be 0 to join the meeting
+                        signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
                         apiKey: apiKey,
                         meetingNumber: meetingNumber,
                         userName: userName,
