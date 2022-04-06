@@ -37,9 +37,9 @@
     <script src="https://source.zoom.us/zoom-meeting-{{ ZOOM_VERSION }}.min.js"></script>
 
     <script>
-        var signatureEndpoint= "/generateSignature"; // Your signature
+        var signatureEndpoint= "/generateSDKSignature"; // Your signature
         var apiKey = '{{ ZOOM_API_KEY }}'; // Your Zoom JWT App API Key
-        var meetingNumber = '123456789'; // The Zoom meeting number
+        var meetingNumber = '{{ meetingNumber }}'; // The Zoom meeting number
         var userName = 'JavaScript'; // Name of the user starting or joining the meeting
         var passWord = ''; // Leave as empty string if the meetingonly requires the waiting room
         var leaveUrl = "http://locahost"; //url where participants are taken after they leave the meeting
@@ -81,8 +81,6 @@
             ZoomMtg.init({
                 leaveUrl: leaveUrl,
                 success: (success) => {
-                    console.log(success)
-
                     ZoomMtg.join({
                         signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
                         apiKey: apiKey,
