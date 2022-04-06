@@ -4,11 +4,11 @@ namespace App\Model;
 
 class Room
 {
-    private string $roomName;
+    private int $meetingNumber;
 
-    public function __construct(string $roomName)
+    public function __construct(string $meetingNumber)
     {
-        $this->roomName = $roomName;
+        $this->meetingNumber = $meetingNumber;
     }
 
     /**
@@ -30,13 +30,13 @@ class Room
     /**
      * Get & Set
      */
-    public function getRoomName(): string
+    public function getMeetingNumber(): string
     {
-        return $this->roomName;
+        return $this->meetingNumber;
     }
 
-    public function setRoomName(string $roomName): void
+    public function setMeetingNumber(string $meetingNumber): void
     {
-        $this->roomName = $roomName;
+        $this->meetingNumber = $roomName;
     }
 }
