@@ -13,15 +13,66 @@
 <div id="aria-notify-area"></div>
 
 <script>
-    ZoomMtg.preLoadWasm();
-    ZoomMtg.prepareWebSDK();
+    var signatureEndpoint= '/generateSignature'; // Your signature
+    var apiKey = '{{ ZOOM_API_KEY }}'; // Your Zoom JWT App API Key
+    var meetingNumber = '123456789'; // The Zoom meeting number
+    var userName = 'JavaScript'; // Name of the user starting or joining the meeting
+    var passWord = ''; // Leave as empty string if the meetingonly requires the waiting room
+    var leaveUrl = "http://locahost"; //url where participants are taken after they leave the meeting
+    var role = 0; // participant = 0, host = 1
+
+    // Loading Zoom
+    ZoomMtg.preLoadWasm()
+    ZoomMtg.prepareWebSDK()
 
     // load language file, also passes any error messages to the ui
-    ZoomMtg.i18n.load('en-US');
-    ZoomMtg.i18n.reload('en-US');
+    ZoomMtg.i18n.load('en-US')
+    ZoomMtg.i18n.reload('en-US')
 
     // Set Web Meeting SDK lib (for Global)
-    ZoomMtg.setZoomJSLib('https://sorce.zoom.us/2.3.5/lib', '/av');
+    ZoomMtg.setZoomJSLib('https://sorce.zoom.us/2.3.5/lib', '/av')
+
+
+
+    function getSignature() {
+        fetch(signatureEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                meetingNumber: meetingNumber,
+                role: role
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            console.log(data)
+            startMeeting(data.signature)
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    ZoomMtg.init({
+        leaveUrl: leaveUrl,
+        success: (success) => {
+            console.log(success)
+
+            ZoomMtg.join({
+                signature: ,
+                apiKey: ,
+                meetingNumber: ,
+                userName: ,
+                passWord: ,
+                success: (success) => { console.log(success)},
+                error: (error) => { console.log(error)},          
+            })
+        },
+        error: (error) => {
+            console.log(error)
+        }
+    });
+
 </script>
 
 {% endblock %}

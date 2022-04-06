@@ -20,7 +20,7 @@ class ZoomController extends AbstractController
     }
 
     /**
-     * @Route("/zoom/clientSDK", name="Zoom client SDK example)
+     * @Route("/clientSDK", name="Zoom client SDK example)
      */
     public function zoomClientSDK(): Response
     {
@@ -30,7 +30,7 @@ class ZoomController extends AbstractController
     }
 
     /**
-     * @Route("/zoom/generateSignature", name="generateSignature", methods="{POST}")
+     * @Route("/generateSignature", name="generateSignature", methods="{POST}")
      */
     public function generateSignature(Request $request): Response
     {
