@@ -1,5 +1,1 @@
-{
-    "meets":[
-        {"meetingName": "Example", "meetingNumber": "123456789"}
-    ]
-}
+[{"meetingName":"Example","meetingId":123456789},{"meetingName":"aaaa","meetingId":76454089472}]

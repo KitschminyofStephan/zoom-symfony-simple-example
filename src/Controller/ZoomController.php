@@ -35,7 +35,6 @@ class ZoomController extends AbstractController
         return $this->render('zoom/zoom-client-view.html.twig', [
             'ZOOM_VERSION' => $this->getParameter('app.zoom_version'),
             'ZOOM_SDK_KEY' => $this->getParameter('app.zoom_sdk_key'),
-            'meetingNumber' => '123456789',
         ]);
     }
 
@@ -47,9 +46,9 @@ class ZoomController extends AbstractController
         $data = json_decode($request->getContent(), false);
 
         $room = new Room();
-        $room->setMeetingNumber($data->meetingNumber);
+        $room->setMeetingId($data->meetingId);
 
-        $signature = $room->generateJWTSignature($this->getParameter('app.zoom_sdk_key'), $this->getParameter('app.zoom_sdk_secret'), $data->meetingNumber, $data->role);
+        $signature = $room->generateJWTSignature($this->getParameter('app.zoom_sdk_key'), $this->getParameter('app.zoom_sdk_secret'), $data->meetingId, $data->role);
 
         return new Response(json_encode($signature), 200);
     }
@@ -62,55 +61,57 @@ class ZoomController extends AbstractController
         $data = json_decode($request->getContent(), false);
         
         $room = new Room();
-        $room->setMeetingNumber($data->meetingNumber);
+        $room->setMeetingId($data->meetingId);
 
-        $signature = $room->generateSDKSignature($this->getParameter('app.zoom_sdk_key'), $this->getParameter('app.zoom_sdk_secret'), $data->meetingNumber, $data->role);
+        $signature = $room->generateSDKSignature($this->getParameter('app.zoom_sdk_key'), $this->getParameter('app.zoom_sdk_secret'), $data->meetingId, $data->role);
 
         return new Response(json_encode($signature), 200);
     }
 
     /**
-     * @Route("/getMeetingNumber", name="getMeetingNumber", methods={"POST"})
+     * @Route("/getMeetingId", name="getMeetingId", methods={"POST"})
      */
-    public function getMeetingNumber(Request $request): Response
+    public function getMeetingId(Request $request): Response
     {
         $data = json_decode($request->getContent(), false);
 
         $room = new Room();
+        dump($data);
         $room->setMeetingName($data->meetingName);
 
         // check if the meet already exist
-        $path = $this->getParameter('kernel.project_dir') . "\src\sampleDB.json";
+        $file = $this->getParameter('kernel.project_dir') . "\src\sampleDB.json";
 
-        $jsonDB = json_decode(file_get_contents($path), false);
-        $meetsDB = $jsonDB->meets;
+        $meets = json_decode(file_get_contents($file), false);
 
 
-        foreach ($meetsDB as $meetDB) {
-            if ($meetDB->meetingName == $room->getMeetingName()) {
-                $room->setMeetingNumber($meetDB->meetingNumber);
+        foreach ($meets as $meet) {
+            if ($meet->meetingName == $room->getMeetingName()) {
+                $room->setMeetingId($meet->meetingId);
             }
         }
 
         // if he doesn't exist, need to create it
-        if ($room->getMeetingNumber() == null) {
-            $response = $this->createZoomMeeting($room);
-            dump($response);
+        if ($room->getMeetingId() == null) {
+            $meetingId = $this->createZoomMeeting($room);
+            $room->setMeetingId($meetingId);
+
+            // Add it to my sample json DB
+            $room_array = array("meetingName" => $room->getMeetingName(), "meetingId" => $room->getMeetingId());
+            array_push($meets, $room_array);
+
+            $json = json_encode($meets);
+            file_put_contents($file, $json);
         }
     
-
-        // $room->getMeetingNumber();
-        
-        return new Response("In progress", 500);
+        //TODO ecrire dasn le fichier json DB
+        return new Response(json_encode($room->getMeetingId()), 200);
     }
 
     private function createZoomMeeting(Room $room) {
-        $url = $this->getParameter('app.zoom_api_url') . "/users/stephank51@gmail.com/meetings";
-
-        dump($url);
+        $url = $this->getParameter('app.zoom_api_url') . "/users/me/meetings"; //TODO here me or userID ? j'imagine que userId va permettre de créér pour d'autre cmpte sauf que nous n'importe qui doit pouvoir créer des meet
 
         $token = $room->generateJWTtoken($this->getParameter('app.zoom_api_key'), $this->getParameter('app.zoom_api_secret'));
-        dump($token);
 
         $response = $this->httpClient->request('POST', $url, [
                 'headers' => [
@@ -123,15 +124,9 @@ class ZoomController extends AbstractController
                 ],
             ]
         );
-        // TODO Erreur 400 bad request GET to POST
-        // To debug try sample request get user info and next try create meeting
-
-        $statusCode = $response->getStatusCode();
-        dump($statusCode);
-
-        $content = $response->getContent();
-        dump($content);
-
-        return $response;
+        
+        $content = $response->toArray();
+        $meetingId = $content["id"];
+        return $meetingId;
     }
 }

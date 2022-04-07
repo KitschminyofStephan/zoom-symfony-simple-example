@@ -6,20 +6,20 @@ use DateTime;
 
 class Room
 {
-    private $meetingNumber = null;
+    private $meetingId = null;
     private $meetingName = null;
 
     /**
      * Get & Set
      */
-    public function getMeetingNumber()
+    public function getMeetingId()
     {
-        return $this->meetingNumber;
+        return $this->meetingId;
     }
 
-    public function setMeetingNumber(int $meetingNumber): void
+    public function setMeetingId(int $meetingId): void
     {
-        $this->meetingNumber = $meetingNumber;
+        $this->meetingId = $meetingId;
     }
 
     public function getMeetingName()
@@ -40,19 +40,19 @@ class Room
         return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
     }
 
-    public function generateJWTSignature($apiKey, $apiSecret, $meetingNumber, $role): string
+    public function generateJWTSignature($apiKey, $apiSecret, $meetingId, $role): string
     {
         date_default_timezone_set("UTC");
         $time = time() * 1000 - 30000; //time in ms
-        $data = base64_encode($apiKey . $meetingNumber . $time . $role);
+        $data = base64_encode($apiKey . $meetingId . $time . $role);
         $hash = hash_hmac('sha256', $data, $apiSecret, true);
-        $_sig = $apiKey . "." . $meetingNumber . "." . $time . "." . $role . "." . base64_encode($hash);
+        $_sig = $apiKey . "." . $meetingId . "." . $time . "." . $role . "." . base64_encode($hash);
 
         //return signature, url safe base64 encoded
         return $this->base64url_encode($_sig);
     }
 
-    public function generateSDKSignature($sdkKey, $sdkSecret, $meetingNumber, $role): string
+    public function generateSDKSignature($sdkKey, $sdkSecret, $meetingId, $role): string
     {
         $date = new DateTime();
 
@@ -60,7 +60,7 @@ class Room
         $exp = $iat + 60 * 60 * 2;
 
         $headers = array('alg'=>'HS256', 'typ'=>'JWT');
-        $payload = array('sdkKey'=>$sdkKey, 'mn'=>$meetingNumber, 'role'=>$role, 'iat'=>$iat, 'exp'=>$exp, 'appKey'=>$sdkKey, 'tokenExp'=>$exp);
+        $payload = array('sdkKey'=>$sdkKey, 'mn'=>$meetingId, 'role'=>$role, 'iat'=>$iat, 'exp'=>$exp, 'appKey'=>$sdkKey, 'tokenExp'=>$exp);
 
         $headers_encoded = $this->base64url_encode(json_encode($headers));
         $payload_encoded = $this->base64url_encode(json_encode($payload));
