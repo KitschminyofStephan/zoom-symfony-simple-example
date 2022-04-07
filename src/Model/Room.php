@@ -6,18 +6,37 @@ use DateTime;
 
 class Room
 {
-    private int $meetingNumber;
+    private $meetingNumber = null;
+    private $meetingName = null;
 
-    public function __construct(string $meetingNumber)
+    /**
+     * Get & Set
+     */
+    public function getMeetingNumber()
+    {
+        return $this->meetingNumber;
+    }
+
+    public function setMeetingNumber(int $meetingNumber): void
     {
         $this->meetingNumber = $meetingNumber;
+    }
+
+    public function getMeetingName()
+    {
+        return $this->meetingName;
+    }
+
+    public function setMeetingName(string $meetingName): void
+    {
+        $this->meetingName = $meetingName;
     }
 
     /**
      * Method
      */
 
-    public function base64url_encode($str) {
+    private function base64url_encode($str) {
         return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
     }
 
@@ -53,17 +72,44 @@ class Room
         return $jwt;
     }
 
-
-    /**
-     * Get & Set
-     */
-    public function getMeetingNumber(): string
+    private function base64UrlEncode2($text) //TODO try to use same baseUrlEncode which SDKSignature and JWT generator
     {
-        return $this->meetingNumber;
+        return str_replace(
+            ['+', '/', '='],
+            ['-', '_', ''],
+            base64_encode($text)
+        );
     }
-
-    public function setMeetingNumber(string $meetingNumber): void
+    public function generateJWTtoken($apiKey, $apiSecret) // the difference with SDKSignature come from the exp value 
     {
-        $this->meetingNumber = $roomName;
+        $now = new DateTime();
+
+        // Create the token header
+        $header = json_encode([
+            'typ' => 'JWT',
+            'alg' => 'HS256'
+        ]);
+
+        // Create the token payload
+        $payload = json_encode([
+            'iss' => $apiKey,
+            'exp' => $now->getTimestamp() + 5000,
+        ]);
+
+        // Encode Haeder
+        $base64UrlHeader = $this->base64UrlEncode2($header);
+
+        // Encode Payload
+        $base64UrlPayload = $this->base64UrlEncode2($payload);
+
+        // Create Signature Hash
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $apiSecret, true);
+
+        // Encode Signature to Base64Url String
+        $base64UrlSignature = $this->base64UrlEncode2($signature);
+
+        // Create JWT
+        $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
+        return $jwt;
     }
 }

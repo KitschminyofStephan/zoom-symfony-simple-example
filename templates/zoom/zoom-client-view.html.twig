@@ -16,9 +16,16 @@
             <h1>Zoom Client view ✅</h1>
         </div>
 
+        <div>
+            <div>
+                <label for="meetName">Meeting Name :</label>
+                <input type="text" id="meetName" name="meetName" minlength="4" maxlength="16">
+            </div>
+
+            <button id="joinMeetingButton" onClick="joinMeeting()">Join Meeting</button>
+        </div>
   
 
-        <button id="joinMeetingButton" onClick="getSignature()">Join Meeting</button>
     </div>
 {% endblock %}
 
@@ -38,7 +45,7 @@
 
     <script>
         var signatureEndpoint= "/generateSDKSignature"; // Your signature
-        var apiKey = '{{ ZOOM_API_KEY }}'; // Your Zoom JWT App API Key
+        var sdkKey = '{{ ZOOM_SDK_KEY }}'; // Your Zoom SDK key
         var meetingNumber = '{{ meetingNumber }}'; // The Zoom meeting number
         var userName = 'JavaScript'; // Name of the user starting or joining the meeting
         var passWord = ''; // Leave as empty string if the meetingonly requires the waiting room
@@ -56,7 +63,40 @@
         // Set Web Meeting SDK lib (for Global)
         ZoomMtg.setZoomJSLib('https://sorce.zoom.us/{{ ZOOM_VERSION }}/lib', '/av')
 
-        function getSignature() {
+        function joinMeeting() {
+            // 1 - Meeting name
+            var meetName = $("#meetName").val();
+
+            if (meetName.length < 4) {
+                alert("Meeting name min length is 4");
+                return
+            }
+
+            // 2 - Meeting number
+            getMeetingNumber(meetName);
+        }
+
+        function getMeetingNumber(meetingName) {
+            $.ajax({
+                type: "POST",
+                url: "/getMeetingNumber",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    meetingName: meetingName,
+                }),
+                success: function(data) {
+                    console.log(data);
+                    // 3 - signature
+                    getSignature(data.meetingNumber);
+                },
+                error: function(request) {
+                    console.log(request.responseText);
+                    alert("Invalid meeting number");
+                }
+            });
+        }
+
+        function getSignature(meetingNumber) {
             $.ajax({
                 type: "POST",
                 url: signatureEndpoint,
@@ -67,10 +107,13 @@
                 }),
                 success: function(data) { 
                     console.log(data);
-                    startMeeting(data.signature)
+                    
+                    // 4 - Start and join meeting
+                    startMeeting(data.signature);
                  },
                 error: function(request) {
                     console.log(request.responseText);
+                    alert("Invalid signature");
                 }
             });
         }
@@ -83,7 +126,7 @@
                 success: (success) => {
                     ZoomMtg.join({
                         signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
-                        apiKey: apiKey,
+                        apiKey: sdkKey,
                         meetingNumber: meetingNumber,
                         userName: userName,
                         passWord: passWord,
