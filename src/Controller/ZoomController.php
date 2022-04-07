@@ -105,24 +105,26 @@ class ZoomController extends AbstractController
     }
 
     private function createZoomMeeting(Room $room) {
-        $url = $this->getParameter('app.zoom_api_url') . "/users/stephank51@gmail.com";
+        $url = $this->getParameter('app.zoom_api_url') . "/users/stephank51@gmail.com/meetings";
 
         dump($url);
 
         $token = $room->generateJWTtoken($this->getParameter('app.zoom_api_key'), $this->getParameter('app.zoom_api_secret'));
         dump($token);
 
-        $response = $this->httpClient->request('GET', $url, [
+        $response = $this->httpClient->request('POST', $url, [
                 'headers' => [
                     'User-Agent' => 'Zoom-api-Jwt-Request',
                     'Content-Type' => 'application/json'
                 ],
                 'auth_bearer' => $token,
+                'json' => [
+                    'default_password' => false
+                ],
             ]
         );
         // TODO Erreur 400 bad request GET to POST
         // To debug try sample request get user info and next try create meeting
-        dump($response);
 
         $statusCode = $response->getStatusCode();
         dump($statusCode);
