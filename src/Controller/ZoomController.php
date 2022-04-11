@@ -65,7 +65,7 @@ class ZoomController extends AbstractController
 
         $signature = $room->generateSDKSignature($this->getParameter('app.zoom_sdk_key'), $this->getParameter('app.zoom_sdk_secret'), $data->meetingId, $data->role);
 
-        return new Response(json_encode($signature), 200);
+        return new Response(json_encode(['signature' => $signature]), 200);
     }
 
     /**
@@ -76,7 +76,6 @@ class ZoomController extends AbstractController
         $data = json_decode($request->getContent(), false);
 
         $room = new Room();
-        dump($data);
         $room->setMeetingName($data->meetingName);
 
         // check if the meet already exist
@@ -104,12 +103,11 @@ class ZoomController extends AbstractController
             file_put_contents($file, $json);
         }
     
-        //TODO ecrire dasn le fichier json DB
         return new Response(json_encode($room->getMeetingId()), 200);
     }
 
     private function createZoomMeeting(Room $room) {
-        $url = $this->getParameter('app.zoom_api_url') . "/users/me/meetings"; //TODO here me or userID ? j'imagine que userId va permettre de créér pour d'autre cmpte sauf que nous n'importe qui doit pouvoir créer des meet
+        $url = $this->getParameter('app.zoom_api_url') . "/users/me/meetings";
 
         $token = $room->generateJWTtoken($this->getParameter('app.zoom_api_key'), $this->getParameter('app.zoom_api_secret'));
 

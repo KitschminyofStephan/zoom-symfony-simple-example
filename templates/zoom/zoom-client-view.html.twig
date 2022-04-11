@@ -46,8 +46,8 @@
     <script>
         var sdkKey = '{{ ZOOM_SDK_KEY }}'; // Your Zoom SDK key
         var userName = 'JavaScript'; // Name of the user starting or joining the meeting
-        var passWord = ''; // Leave as empty string if the meetingonly requires the waiting room
-        var leaveUrl = "http://locahost"; //url where participants are taken after they leave the meeting
+        var passWord = 'qfk9rb'; // Leave as empty string if the meetingonly requires the waiting room
+        var leaveUrl = "http://127.0.0.1:8000/"; //url where participants are taken after they leave the meeting
         var role = 0; // participant = 0, host = 1
 
         // Loading Zoom
@@ -102,14 +102,14 @@
                     meetingId: meetingId,
                     role: role,
                 }),
-                success: function(data) { 
-                    console.log(data);
-                    
+                success: function(response) { 
                     // 4 - Start and join meeting
-                    startMeeting(meetingId, data.signature);
+                    signatureObj = JSON.parse(response);
+                    console.log(signatureObj);
+                    startMeeting(meetingId, signatureObj.signature);
                  },
                 error: function(request) {
-                    console.log(request.responseText);
+                    console.log(request);
                     alert("Invalid signature");
                 }
             });
@@ -117,17 +117,22 @@
 
         function startMeeting(meetingId, signature) {
             document.getElementById('zmmtg-root').style.display = 'block';
+            console.log("Starting joining meeting ...");
+            console.log("MeetingID / meetingNumber = " + meetingId);
+            console.log("Signature = " + signature);
 
             ZoomMtg.init({
                 leaveUrl: leaveUrl,
                 success: (success) => {
+                    console.log(signature)
                     ZoomMtg.join({
                         meetingNumber: meetingId, // meetingNumber <=> meetingId
                         userName: userName,
-                        //userEmail: '', required only for Webinar
-                        passWord: passWord,
+                        passWord: '',
                         signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
-                        apiKey: sdkKey,
+                        sdkKey: sdkKey,
+                        //userEmail: '', // required only for Webinar
+                        //tk: '',
                         success: (success) => { 
                             console.log("Join succes");
                             console.log(success)

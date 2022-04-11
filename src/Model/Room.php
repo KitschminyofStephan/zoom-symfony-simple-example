@@ -54,9 +54,14 @@ class Room
 
     public function generateSDKSignature($sdkKey, $sdkSecret, $meetingId, $role): string
     {
-        $date = new DateTime();
+        dump($sdkKey);
+        dump($sdkSecret);
+        dump($meetingId);
+        dump($role);
+        
+        $now = new DateTime();
 
-        $iat = round(($date->getTimestamp() - 30000) / 1000);
+        $iat = round(($now->getTimestamp() - 30000) / 1000);
         $exp = $iat + 60 * 60 * 2;
 
         $headers = array('alg'=>'HS256', 'typ'=>'JWT');
@@ -68,7 +73,7 @@ class Room
         $signature = hash_hmac('SHA256', "$headers_encoded.$payload_encoded", $sdkSecret, true);
         $signature_encoded = $this->base64url_encode($signature);
 
-        $jwt = "$headers_encoded.$payload_encoded.$signature_encoded";
+        $jwt = $headers_encoded . "." . $payload_encoded . "." . $signature_encoded;
         return $jwt;
     }
 
