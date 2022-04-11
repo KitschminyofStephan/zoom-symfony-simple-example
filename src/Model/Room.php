@@ -54,14 +54,10 @@ class Room
 
     public function generateSDKSignature($sdkKey, $sdkSecret, $meetingId, $role): string
     {
-        dump($sdkKey);
-        dump($sdkSecret);
-        dump($meetingId);
-        dump($role);
-        
-        $now = new DateTime();
+        date_default_timezone_set("UTC");
+        $time = time() * 1000 - 30000; //time in ms
 
-        $iat = round(($now->getTimestamp() - 30000) / 1000);
+        $iat = round(($time - 30000) / 1000);
         $exp = $iat + 60 * 60 * 2;
 
         $headers = array('alg'=>'HS256', 'typ'=>'JWT');
