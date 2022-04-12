@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Zoom Component view example{% endblock %}
+
+{% block stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{{ '/component-view.css' }}"/>
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <div class="example-wrapper">
+            <h1>Zoom Component view ✅</h1>
+        </div>
+
+        <div>
+            <div>
+                <label for="meetName">Meeting Name :</label>
+                <input type="text" id="meetName" name="meetName" minlength="4" maxlength="16">
+            </div>
+
+            <button class="joinMeetingButton" onClick="joinMeetingAsParticipant()">Join Meeting as participant <code>role = 0</code></button>
+            <button class="joinMeetingButton" onClick="joinMeetingAsHost()">Join Meeting as Host <code>role = 1</code></button>
+        </div>
+  
+
+    </div>
+{% endblock %}
+
+{% block body_script %}
+    <!-- For either view: import Web Meeting SDK JS dependencies -->
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/lib/vendor/react.min.js"></script>
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/lib/vendor/react-dom.min.js"></script>
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/lib/vendor/redux.min.js"></script>
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/lib/vendor/redux-thunk.min.js"></script>
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/lib/vendor/lodash.min.js"></script>
+
+    <!-- For Component View -->
+    <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/zoom-meeting-embedded-{{ ZOOM_VERSION }}.min.js"></script>
+{% endblock %}

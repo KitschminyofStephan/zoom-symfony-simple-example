@@ -28,11 +28,22 @@ class ZoomController extends AbstractController
     }
 
     /**
-     * @Route("/clientSDK", name="ZoomClientSDKExample")
+     * @Route("/clientView", name="ZoomClientViewExample")
      */
-    public function zoomClientSDK(): Response
+    public function zoomClientView(): Response
     {
         return $this->render('zoom/zoom-client-view.html.twig', [
+            'ZOOM_VERSION' => $this->getParameter('app.zoom_version'),
+            'ZOOM_SDK_KEY' => $this->getParameter('app.zoom_sdk_key'),
+        ]);
+    }
+
+    /**
+     * @Route("/componentView", name="ZoomComponentViewExample")
+     */
+    public function zoomComponentView(): Response
+    {
+        return $this->render('zoom/zoom-component-view.html.twig', [
             'ZOOM_VERSION' => $this->getParameter('app.zoom_version'),
             'ZOOM_SDK_KEY' => $this->getParameter('app.zoom_sdk_key'),
         ]);
