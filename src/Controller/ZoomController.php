@@ -87,23 +87,23 @@ class ZoomController extends AbstractController
         foreach ($meets as $meet) {
             if ($meet->meetingName == $room->getMeetingName()) {
                 $room->setMeetingId($meet->meetingId);
+                $room->setPassword($meet->password);
             }
         }
 
         // if he doesn't exist, need to create it
         if ($room->getMeetingId() == null) {
-            $meetingId = $this->createZoomMeeting($room);
-            $room->setMeetingId($meetingId);
+            $room = $this->createZoomMeeting($room);
 
             // Add it to my sample json DB
-            $room_array = array("meetingName" => $room->getMeetingName(), "meetingId" => $room->getMeetingId());
+            $room_array = array("meetingName" => $room->getMeetingName(), "meetingId" => $room->getMeetingId(), "password" => $room->getPassword());
             array_push($meets, $room_array);
 
             $json = json_encode($meets);
             file_put_contents($file, $json);
         }
-    
-        return new Response(json_encode($room->getMeetingId()), 200);
+        
+        return new Response(json_encode(['meetingId' => $room->getMeetingId(), 'password' => $room->getPassword()]), 200);
     }
 
     private function createZoomMeeting(Room $room) {
@@ -124,7 +124,10 @@ class ZoomController extends AbstractController
         );
         
         $content = $response->toArray();
-        $meetingId = $content["id"];
-        return $meetingId;
+
+        $room->setMeetingId($content["id"]);
+        $room->setPassword($content["password"]);
+
+        return $room;
     }
 }

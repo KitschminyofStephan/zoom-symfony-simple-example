@@ -8,6 +8,7 @@ class Room
 {
     private $meetingId = null;
     private $meetingName = null;
+    private $password = null;
 
     /**
      * Get & Set
@@ -30,6 +31,16 @@ class Room
     public function setMeetingName(string $meetingName): void
     {
         $this->meetingName = $meetingName;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password)
+    {
+        $this->password = $password;
     }
 
     /**

@@ -44,11 +44,9 @@
     <script src="https://source.zoom.us/zoom-meeting-{{ ZOOM_VERSION }}.min.js"></script>
 
     <script>
-        var sdkKey = '{{ ZOOM_SDK_KEY }}'; // Your Zoom SDK key
         var userName = 'JavaScript'; // Name of the user starting or joining the meeting
-        var passWord = 'qfk9rb'; // Leave as empty string if the meetingonly requires the waiting room
         var leaveUrl = "http://127.0.0.1:8000/"; //url where participants are taken after they leave the meeting
-        var role = 0; // participant = 0, host = 1
+        var role = 1; // participant = 0, host = 1
 
         // Loading Zoom
         ZoomMtg.preLoadWasm()
@@ -82,18 +80,20 @@
                 data: JSON.stringify({
                     meetingName: meetingName,
                 }),
-                success: function(meetingId) {
+                success: function(response) {
                     // 3 - signature
-                    getSignature(meetingId);
+                    console.log(response)
+                    roomObj = JSON.parse(response);
+                    console.log(roomObj);
+                    getSignature(roomObj.meetingId, roomObj.password);
                 },
                 error: function(request) {
-                    console.log(request.responseText);
                     alert("Invalid meeting number");
                 }
             });
         }
 
-        function getSignature(meetingId) {
+        function getSignature(meetingId, password) {
             $.ajax({
                 type: "POST",
                 url: "/generateSDKSignature",
@@ -105,21 +105,21 @@
                 success: function(response) { 
                     // 4 - Start and join meeting
                     signatureObj = JSON.parse(response);
-                    console.log(signatureObj);
-                    startMeeting(meetingId, signatureObj.signature);
+                    startMeeting(meetingId, password, signatureObj.signature);
                  },
                 error: function(request) {
-                    console.log(request);
                     alert("Invalid signature");
                 }
             });
         }
 
-        function startMeeting(meetingId, signature) {
-            document.getElementById('zmmtg-root').style.display = 'block';
+        function startMeeting(meetingId, password, signature) {
             console.log("Starting joining meeting ...");
             console.log("MeetingID / meetingNumber = " + meetingId);
+            console.log("Password = " + password);
             console.log("Signature = " + signature);
+
+            document.getElementById('zmmtg-root').style.display = 'block';
 
             ZoomMtg.init({
                 leaveUrl: leaveUrl,
@@ -128,18 +128,18 @@
                     ZoomMtg.join({
                         meetingNumber: meetingId, // meetingNumber <=> meetingId
                         userName: userName,
-                        passWord: '',
+                        passWord: password,
                         signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
-                        sdkKey: sdkKey,
+                        sdkKey: '{{ ZOOM_SDK_KEY }}',
                         //userEmail: '', // required only for Webinar
                         //tk: '',
                         success: (success) => { 
                             console.log("Join succes");
-                            console.log(success)
+                            //console.log(success)
                         },
                         error: (error) => { 
                             console.log("Join error");
-                            console.log(error)
+                            //console.log(error)
                         },          
                     })
                 },
