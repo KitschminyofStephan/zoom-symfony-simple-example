@@ -21,8 +21,10 @@
             <button class="joinMeetingButton" onClick="joinMeetingAsParticipant()">Join Meeting as participant <code>role = 0</code></button>
             <button class="joinMeetingButton" onClick="joinMeetingAsHost()">Join Meeting as Host <code>role = 1</code></button>
         </div>
-  
 
+        <div id="meetingSDKElement">
+            <!-- Zoom Meeting SDK rendered here -->
+        </div>
     </div>
 {% endblock %}
 
@@ -36,4 +38,105 @@
 
     <!-- For Component View -->
     <script src="https://source.zoom.us/{{ ZOOM_VERSION }}/zoom-meeting-embedded-{{ ZOOM_VERSION }}.min.js"></script>
+
+    <script>
+        var userName = 'JavaScript'; // Name of the user starting or joining the meeting
+        var leaveUrl = "http://127.0.0.1:8000/"; //url where participants are taken after they leave the meeting
+        var role; // participant = 0, host = 1
+
+        const client = ZoomMtgEmbedded.createClient();
+
+        let meetingSDKElement = document.getElementById('meetingSDKElement'); // Your element where to display the meeting
+
+        client.init({
+            zoomAppRoot: meetingSDKElement,
+            language: 'en-US',
+        });
+
+        function joinMeetingAsHost() {
+            role = 1;
+            joinMeeting();
+        }
+
+        function joinMeetingAsParticipant() {
+            role = 0;
+            joinMeeting();
+        }
+
+        function joinMeeting() {
+            // 1 - Meeting name
+            var meetName = $("#meetName").val();
+
+            if (meetName.length < 4) {
+                alert("Meeting name min length is 4");
+                return
+            }
+
+            // 2 - Meeting number
+            getMeetingId(meetName);
+        }
+
+        function getMeetingId(meetingName) {
+            $.ajax({
+                type: "POST",
+                url: "/getMeetingId",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    meetingName: meetingName,
+                }),
+                success: function(response) {
+                    // 3 - signature
+                    roomObj = JSON.parse(response);
+                    getSignature(roomObj.meetingId, roomObj.password);
+                },
+                error: function(request) {
+                    alert("Invalid meeting number");
+                }
+            });
+        }
+
+        function getSignature(meetingId, password) {
+            $.ajax({
+                type: "POST",
+                url: "/generateSDKSignature",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    meetingId: meetingId,
+                    role: role,
+                }),
+                success: function(response) { 
+                    // 4 - Start and join meeting
+                    signatureObj = JSON.parse(response);
+                    startMeeting(meetingId, password, signatureObj.signature);
+                 },
+                error: function(request) {
+                    alert("Invalid signature");
+                }
+            });
+        }
+
+        function startMeeting(meetingId, password, signature) {
+            console.log("Starting joining meeting ...");
+            console.log("MeetingID / meetingNumber = " + meetingId);
+            console.log("Password = " + password);
+            console.log("Signature = " + signature);
+
+            client.join({
+                sdkKey: '{{ ZOOM_SDK_KEY }}',
+                signature: signature, // role in signature needs to be 1 to start and need to be 0 to join the meeting
+                meetingNumber: meetingId, // meetingNumber <=> meetingId
+                userName: userName,
+                password: password,
+                userEmail: '', // required only for Webinar
+                tk: '',
+                success: (success) => {
+                    console.log(success);
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            });
+        }
+
+    </script>
 {% endblock %}

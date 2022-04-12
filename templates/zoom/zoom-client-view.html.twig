@@ -90,9 +90,7 @@
                 }),
                 success: function(response) {
                     // 3 - signature
-                    console.log(response)
                     roomObj = JSON.parse(response);
-                    console.log(roomObj);
                     getSignature(roomObj.meetingId, roomObj.password);
                 },
                 error: function(request) {
