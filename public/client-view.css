@@ -4,7 +4,7 @@
     text-align: center;
 }
 
-#joinMeetingButton {
+.joinMeetingButton {
     margin-top: 20px;
     background-color: #2D8CFF;
     color: #ffffff;

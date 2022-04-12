@@ -22,7 +22,8 @@
                 <input type="text" id="meetName" name="meetName" minlength="4" maxlength="16">
             </div>
 
-            <button id="joinMeetingButton" onClick="joinMeeting()">Join Meeting</button>
+            <button class="joinMeetingButton" onClick="joinMeetingAsParticipant()">Join Meeting as participant <code>role = 0</code></button>
+            <button class="joinMeetingButton" onClick="joinMeetingAsHost()">Join Meeting as Host <code>role = 1</code></button>
         </div>
   
 
@@ -46,7 +47,7 @@
     <script>
         var userName = 'JavaScript'; // Name of the user starting or joining the meeting
         var leaveUrl = "http://127.0.0.1:8000/"; //url where participants are taken after they leave the meeting
-        var role = 1; // participant = 0, host = 1
+        var role; // participant = 0, host = 1
 
         // Loading Zoom
         ZoomMtg.preLoadWasm()
@@ -58,6 +59,16 @@
 
         // Set Web Meeting SDK lib (for Global)
         ZoomMtg.setZoomJSLib('https://sorce.zoom.us/{{ ZOOM_VERSION }}/lib', '/av')
+
+        function joinMeetingAsHost() {
+            role = 1;
+            joinMeeting();
+        }
+
+        function joinMeetingAsParticipant() {
+            role = 0;
+            joinMeeting();
+        }
 
         function joinMeeting() {
             // 1 - Meeting name
